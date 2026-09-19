@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">GIULIA. — I miei viaggi</title>
+  <meta name="description" content="Galleria fotografica di un viaggio." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,900&family=IBM+Plex+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#2E2B28",
+            muted: "#6B6B6B",
+            accent: "#7FB4D6",
+            paper: "#F7F3EC",
+            frame: "#EAE3D4",
+          },
+          fontFamily: {
+            serif: ['"Fraunces"', "serif"],
+            mono: ['"IBM Plex Mono"', "monospace"],
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-paper text-ink font-mono font-light min-h-screen flex flex-col md:pl-64">
+
+  <!-- ============ SIDEBAR (desktop) / TOP BAR (mobile) — identica a index.html ============ -->
+  <header id="navbar" class="fixed top-0 left-0 right-0 md:right-auto md:bottom-0 md:w-64 z-40 navbar-blur md:border-r md:border-ink/10 flex flex-col">
+    <div class="flex items-center justify-between px-5 py-4 md:flex-col md:items-start md:px-8 md:py-10 md:gap-10">
+      <a href="index.html" class="site-name-link font-serif text-2xl md:text-3xl font-black tracking-tight"></a>
+
+      <ul id="nav-links" class="hidden md:flex md:flex-col md:gap-4 text-sm uppercase tracking-widest"></ul>
+
+      <button id="menu-toggle" aria-label="Apri menu" aria-expanded="false" class="md:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5">
+        <span class="block w-6 h-0.5 bg-ink"></span>
+        <span class="block w-6 h-0.5 bg-ink"></span>
+        <span class="block w-6 h-0.5 bg-ink"></span>
+      </button>
+    </div>
+  </header>
+
+  <a href="index.html" id="gallery-link" class="hidden md:block fixed top-10 right-8 z-40 text-xs uppercase tracking-widest nav-place">Gallery</a>
+
+  <div id="mobile-panel" class="fixed top-0 right-0 h-full w-3/4 max-w-xs bg-ink z-50 flex flex-col px-8 py-8">
+    <button id="menu-close" aria-label="Chiudi menu" class="self-end text-paper text-3xl leading-none mb-8">&times;</button>
+    <span class="site-name-link font-serif text-2xl font-black text-paper mb-8"></span>
+    <ul id="mobile-nav-links" class="flex flex-col gap-6 text-paper text-lg uppercase tracking-widest"></ul>
+  </div>
+  <div id="mobile-overlay" class="fixed inset-0 bg-ink/40 z-40 hidden"></div>
+
+  <!-- ============ CONTENUTO VIAGGIO (popolato da js/trip.js) ============ -->
+  <main class="flex-1 pt-28 md:pt-20 pb-16 px-4 md:px-12 max-w-6xl w-full">
+
+    <!-- Mostrato solo se lo slug non esiste -->
+    <div id="not-found" class="hidden text-center py-24">
+      <h1 class="font-serif font-black text-3xl md:text-4xl mb-4">Viaggio non trovato</h1>
+      <p class="mb-8 text-muted">Il viaggio che cerchi non esiste o è stato spostato.</p>
+      <a href="index.html" class="nav-place text-lg">Torna alla home</a>
+    </div>
+
+    <!-- Contenuto effettivo del viaggio -->
+    <div id="trip-content" class="hidden">
+      <header class="mb-10 md:mb-14 max-w-2xl">
+        <h1 id="trip-title" class="font-bold text-3xl md:text-5xl mb-4"></h1>
+        <p id="trip-description" class="text-sm md:text-base font-light leading-relaxed text-muted"></p>
+      </header>
+
+      <!-- Galleria masonry dentro la cornice: 1 colonna mobile, 2 tablet, 3-4 desktop -->
+      <div id="trip-gallery-frame" class="gallery-frame">
+        <div id="trip-gallery" class="masonry columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4"></div>
+      </div>
+
+      <!-- Navigazione viaggio precedente / successivo -->
+      <nav class="flex items-center justify-between mt-16 pt-8 border-t border-ink/20 text-sm md:text-base uppercase tracking-wider">
+        <a id="prev-trip" href="#" class="flex items-center gap-2 nav-place">
+          <span class="text-accent text-xl">&larr;</span>
+          <span id="prev-trip-name"></span>
+        </a>
+        <a id="next-trip" href="#" class="flex items-center gap-2 nav-place text-right">
+          <span id="next-trip-name"></span>
+          <span class="text-accent text-xl">&rarr;</span>
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <!-- ============ LIGHTBOX ============ -->
+  <div id="lightbox" class="fixed inset-0 bg-ink/95 z-[60] hidden items-center justify-center px-4">
+    <button id="lightbox-close" aria-label="Chiudi" class="absolute top-5 right-5 text-paper text-4xl leading-none">&times;</button>
+    <img id="lightbox-img" src="" alt="" class="max-h-[85vh] max-w-full object-contain" />
+  </div>
+
+  <footer class="bg-ink text-paper text-center py-6 px-4">
+    <p class="text-base md:text-lg">© <span id="year"></span> <span class="site-name-link font-serif"></span> — tutti i viaggi, tutte le foto.</p>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/trip.js"></script>
+</body>
+</html>

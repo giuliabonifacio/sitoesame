@@ -1,0 +1,179 @@
+/*
+ * style.css
+ * Solo regole che Tailwind non copre: variabili colore, sidebar/navbar,
+ * griglia casuale della home, cornice galleria, overlay foto, pannello
+ * mobile, lightbox.
+ */
+
+:root {
+  /* Palette unica: se cambia qui, cambia ovunque */
+  --color-ink: #2E2B28; /* testo principale, quasi nero */
+  --color-muted: #6B6B6B; /* grigio scuro, testo secondario e menu */
+  --color-accent: #7FB4D6; /* azzurro, hover e stati attivi */
+  --color-paper: #F7F3EC; /* sfondo pagina, beige chiaro */
+  --color-frame: #EAE3D4; /* sfondo cornice galleria, poco più scuro */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Rispetta la preferenza di riduzione del movimento dell'utente */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ============ SIDEBAR (desktop) / NAVBAR (mobile) ============ */
+.navbar-blur {
+  background-color: rgba(247, 243, 236, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(46, 43, 40, 0.08);
+}
+
+@media (min-width: 768px) {
+  .navbar-blur {
+    border-bottom: none;
+  }
+}
+
+/* Voci di menu (sidebar luoghi, link "Gallery", link mobile): grigio
+   scuro di base, diventano azzurre al passaggio del mouse */
+.nav-place {
+  color: var(--color-muted);
+  transition: color 0.25s ease;
+}
+.nav-place:hover,
+.nav-place-active {
+  color: var(--color-accent);
+}
+
+/* Pannello menu mobile: lo stato "fuori schermo" iniziale è impostato
+   da GSAP (xPercent: 100) in js/main.js e js/trip.js, non da CSS,
+   per evitare che due sistemi di transform (CSS e GSAP) confliggano. */
+#mobile-panel {
+  visibility: hidden;
+}
+#mobile-panel.js-ready {
+  visibility: visible;
+}
+#mobile-panel .nav-place {
+  color: var(--color-paper);
+}
+#mobile-panel .nav-place:hover,
+#mobile-panel .nav-place-active {
+  color: var(--color-accent);
+}
+
+/* ============ CORNICE GALLERIA (home + pagina viaggio) ============ */
+.gallery-frame {
+  background-color: var(--color-frame);
+  border-radius: 6px;
+  padding: 18px;
+}
+
+@media (min-width: 768px) {
+  .gallery-frame {
+    padding: 32px;
+  }
+}
+
+/* ============ GALLERIA HOME (griglia casuale) ============ */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 110px;
+  grid-auto-flow: dense;
+  gap: 14px;
+}
+
+@media (min-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 120px;
+    gap: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gallery-grid {
+    grid-template-columns: repeat(8, 1fr);
+    grid-auto-rows: 130px;
+  }
+}
+
+/* Taglie casuali assegnate via JS: garantiscono varietà senza sovrapposizioni
+   perché la griglia gestisce da sola il posizionamento (auto-flow: dense) */
+.gallery-item.span-s { grid-column: span 2; grid-row: span 2; }
+.gallery-item.span-m { grid-column: span 3; grid-row: span 2; }
+.gallery-item.span-l { grid-column: span 3; grid-row: span 3; }
+.gallery-item.span-tall { grid-column: span 2; grid-row: span 3; }
+.gallery-item.span-wide { grid-column: span 4; grid-row: span 2; }
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: pointer;
+  /* rotazione lieve impostata via JS con --rot, non altera il flusso layout */
+  transform: rotate(var(--rot, 0deg));
+  will-change: transform;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.06);
+}
+
+/* Overlay con il nome del posto */
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  background-color: rgba(46, 43, 40, 0.85); /* ink @ 85% */
+  color: var(--color-paper);
+  font-size: 1.1rem;
+  font-weight: 500;
+  opacity: 0;
+}
+
+/* Su touch: il nome resta sempre visibile in basso, overlay ridotto */
+body.is-touch .gallery-overlay {
+  opacity: 1;
+  inset: auto 0 0 0;
+  height: 40%;
+  background: linear-gradient(to top, rgba(46, 43, 40, 0.85), rgba(46, 43, 40, 0));
+}
+
+/* ============ GALLERIA VIAGGIO (masonry) ============ */
+.masonry img {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+}
+
+.masonry figure {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  opacity: 0; /* stato iniziale prima dell'animazione ScrollTrigger */
+}
+
+/* ============ LIGHTBOX ============ */
+#lightbox.flex {
+  display: flex;
+}
